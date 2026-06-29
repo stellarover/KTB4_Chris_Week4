@@ -4,28 +4,27 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "posts")
-public class Post {
+@Table(name = "comments")
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
-    @Column(nullable = false)
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
 
     @Column(nullable = false)
     private String content;
-
-    @Column
-    private String image;
-
-    @Column(name = "view_count", nullable = false)
-    private int viewCount = 0;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -36,22 +35,21 @@ public class Post {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    protected Post() {}
+    protected Comment() {}
 
-    public Post(User author, String title, String content, String image) {
+    public Comment(Post post, User author, Comment parent, String content) {
+        this.post = post;
         this.author = author;
-        this.title = title;
+        this.parent = parent;
         this.content = content;
-        this.image = image;
         this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() { return id; }
+    public Post getPost() { return post; }
     public User getAuthor() { return author; }
-    public String getTitle() { return title; }
+    public Comment getParent() { return parent; }
     public String getContent() { return content; }
-    public String getImage() { return image; }
-    public int getViewCount() { return viewCount; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public LocalDateTime getDeletedAt() { return deletedAt; }
